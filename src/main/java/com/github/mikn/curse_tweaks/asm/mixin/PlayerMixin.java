@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,11 +24,22 @@ public class PlayerMixin {
     private void inject(CallbackInfo ci) {
         Player player = (Player) (Object) this;
         var slots = player.getArmorSlots();
-        int curseCounts = 0;
+        int bindingCurseCounts = 0;
+        int vanishmentCurseCounts = 0;
         for(ItemStack itemStack: slots) {
             for(CompoundTag tag:getList(itemStack.getEnchantmentTags())) {
-                CurseTweaks.LOGGER.error(tag);
+                if(tag.get("id").getAsString().equals("minecraft:binding_curse")) {
+                    bindingCurseCounts++;
+                } else if(tag.get("id").getAsString().equals("minecraft:vanishing_curse")) {
+                    vanishmentCurseCounts++;
+                }
             }
+        }
+        if(bindingCurseCounts > 0) {
+            player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED,1, bindingCurseCounts-1),player);
+        }
+        if(vanishmentCurseCounts > 0) {
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED,1, vanishmentCurseCounts-1),player);
         }
     }
     
