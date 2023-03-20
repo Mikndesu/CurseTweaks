@@ -16,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.github.mikn.curse_tweaks.CurseTweaks;
-
 @Mixin(Player.class)
 public class PlayerMixin {
     @Inject(method = "tick()V", at = @At("RETURN"), cancellable = true)
